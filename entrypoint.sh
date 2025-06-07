@@ -5,3 +5,6 @@ php bin/console doctrine:migrations:migrate --no-interaction --env=prod
 
 php-fpm81 -D
 nginx -g 'daemon off;'
+
+echo "nginx.conf daemon satırları:"
+grep -i daemon /etc/nginx/nginx.conf || true
