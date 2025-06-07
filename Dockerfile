@@ -4,9 +4,6 @@ FROM composer:$COMPOSER_VERSION as composer
 
 FROM golang:alpine as builder
 
-# envsubst from gettext can not replace env vars with default values
-# this package is not available for ARM32 and we have to build it from source code
-# flag -ldflags "-s -w" produces a smaller executable
 RUN go install -ldflags "-s -w" -v github.com/a8m/envsubst/cmd/envsubst@v1.3.0
 
 FROM alpine:3.18
@@ -60,7 +57,8 @@ RUN set -ex \
  && ln -sf /usr/sbin/php-fpm81 /usr/sbin/php-fpm \
  && rm -rf /var/cache/apk/* \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
- && ln -sf /dev/stderr /var/log/nginx/error.log
+ && ln -sf /dev/stderr /var/log/nginx/error.log \
+ && sed -i '/daemon\s\+\(off\|on\);/d' /etc/nginx/nginx.conf
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
@@ -73,7 +71,7 @@ RUN set -ex \
  && mv /tmp/wallabag-*/* /var/www/wallabag/ \
  && rm -rf /tmp/wallabag* \
  && cd /var/www/wallabag \
- && mkdir data/assets \
+ && mkdir -p data/assets \
  && envsubst < /etc/wallabag/parameters.template.yml > app/config/parameters.yml \
  && SYMFONY_ENV=prod composer install --no-dev -o --prefer-dist --no-progress \
  && rm -rf /root/.composer/* /var/www/wallabag/var/cache/* /var/www/wallabag/var/logs/* /var/www/wallabag/var/sessions/* \
@@ -82,6 +80,8 @@ RUN set -ex \
 ENV PATH="${PATH}:/var/www/wallabag/bin"
 
 WORKDIR /var/www/wallabag
+
+HEALTHCHECK CMD curl --fail --silent --show-error --user-agent healthcheck http://localhost/api/info || exit 1
 
 EXPOSE 80
 
