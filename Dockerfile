@@ -83,8 +83,6 @@ ENV PATH="${PATH}:/var/www/wallabag/bin"
 
 WORKDIR /var/www/wallabag
 
-HEALTHCHECK CMD curl --fail --silent --show-error --user-agent healthcheck http://localhost/api/info || exit 1
-
 EXPOSE 80
 
 COPY entrypoint.sh /entrypoint.sh
