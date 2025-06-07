@@ -58,7 +58,7 @@ RUN set -ex \
  && rm -rf /var/cache/apk/* \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log \
- && sed -i '/daemon\s\+\(off\|on\);/d' /etc/nginx/nginx.conf
+ && sed -i '/daemon[[:space:]]\{1,\}\(off\|on\);/Id' /etc/nginx/nginx.conf
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
