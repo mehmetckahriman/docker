@@ -81,12 +81,10 @@ RUN set -ex \
 
 ENV PATH="${PATH}:/var/www/wallabag/bin"
 
-# Set console entry path
 WORKDIR /var/www/wallabag
 
 HEALTHCHECK CMD curl --fail --silent --show-error --user-agent healthcheck http://localhost/api/info || exit 1
 
 EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["wallabag"]
+
 CMD ["sh", "-c", "php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php-fpm81 -D && nginx -g 'daemon off;'"]
