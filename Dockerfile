@@ -87,4 +87,7 @@ HEALTHCHECK CMD curl --fail --silent --show-error --user-agent healthcheck http:
 
 EXPOSE 80
 
-CMD sh -c "php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php-fpm81 -D && nginx -g 'daemon off;'"
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
