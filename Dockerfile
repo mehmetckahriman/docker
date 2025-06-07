@@ -57,8 +57,11 @@ RUN set -ex \
  && ln -sf /usr/sbin/php-fpm81 /usr/sbin/php-fpm \
  && rm -rf /var/cache/apk/* \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
- && ln -sf /dev/stderr /var/log/nginx/error.log \
- && sed -i '/daemon\s*off;/d;/daemon\s*on;/d' /etc/nginx/nginx.conf
+ && ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Nginx'in tüm config dosyalarındaki "daemon" satırlarını sil:
+RUN find /etc/nginx/ -type f -exec sed -i '/daemon\s*off;/d;/daemon\s*on;/d' {} \; \
+ && grep -r daemon /etc/nginx/ || echo "daemon satırı hiçbir yerde yok"
 
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
