@@ -1,7 +1,15 @@
 #!/bin/sh
-set -e
+set -ex
 
-php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+echo "PWD: $(pwd)"
+ls -l
+ls -l bin
+which php
+php --version
+ls -l bin/console
+php bin/console --version || true
 
-php-fpm81 -D
+php bin/console doctrine:migrations:migrate --no-interaction --env=prod || true
+
+php-fpm81 -D || true
 nginx -g 'daemon off;'
